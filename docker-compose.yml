@@ -1,16 +1,16 @@
 services:
   backend:
-    build: ./travel-planner-be
+    build: ./be
     ports:
       - "8000:8000"
     volumes:
-      - ./travel-planner-be:/app
+      - ./be:/app
     environment:
       - ARTIC_API_BASE_URL=https://api.artic.edu/api/v1
       - DATABASE_URL=sqlite:///./travel.db
 
   frontend:
-    build: ./travel-planner-fe
+    build: ./fe
     ports:
       - "3000:3000"
     depends_on:

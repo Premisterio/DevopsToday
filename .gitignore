@@ -18,6 +18,7 @@ travel.db
 .env.local
 .env.production
 .env.*.local
+be/.env
 
 # Node
 node_modules/
