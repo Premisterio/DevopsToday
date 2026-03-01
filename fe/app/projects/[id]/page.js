@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import PlaceCard from '@/components/PlaceCard';
 import PlaceSearch from '@/components/PlaceSearch';
-import { getProject, addPlace, updatePlace } from '@/lib/api';
+import { getProject, addPlace, updatePlace, getErrorMessage } from '@/lib/api';
 
 export default function ProjectDetailPage() {
   const { id } = useParams();
@@ -14,31 +14,31 @@ export default function ProjectDetailPage() {
   const [loading, setLoading] = useState(true);
   const [showAddPlace, setShowAddPlace] = useState(false);
 
-  const fetchProject = async () => {
+  const fetchProject = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
       const res = await getProject(id);
       setProject(res.data);
     } catch (err) {
-      setError(err.response?.data?.detail || 'Failed to load project.');
+      setError(getErrorMessage(err, 'Failed to load project.'));
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
 
   useEffect(() => {
     fetchProject();
-  }, [id]);
+  }, [fetchProject]);
 
   const handlePlaceAdded = async (artwork) => {
     setError(null);
     try {
       await addPlace(id, { external_id: artwork.id });
       setShowAddPlace(false);
-      fetchProject();
+      await fetchProject();
     } catch (err) {
-      setError(err.response?.data?.detail || 'Failed to add place.');
+      setError(getErrorMessage(err, 'Failed to add place.'));
     }
   };
 
@@ -46,9 +46,9 @@ export default function ProjectDetailPage() {
     setError(null);
     try {
       await updatePlace(id, placeId, data);
-      fetchProject();
+      await fetchProject();
     } catch (err) {
-      setError(err.response?.data?.detail || 'Failed to update place.');
+      setError(getErrorMessage(err, 'Failed to update place.'));
     }
   };
 

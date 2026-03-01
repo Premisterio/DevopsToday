@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { createProject } from '@/lib/api';
+import { createProject, getErrorMessage } from '@/lib/api';
 import PlaceSearch from './PlaceSearch';
 
 export default function ProjectForm({ onCreated, onClose }) {
@@ -47,7 +47,7 @@ export default function ProjectForm({ onCreated, onClose }) {
       });
       onCreated?.();
     } catch (err) {
-      setError(err.response?.data?.detail || 'Failed to create project.');
+      setError(getErrorMessage(err, 'Failed to create project.'));
       setSubmitting(false);
     }
   };
@@ -58,7 +58,7 @@ export default function ProjectForm({ onCreated, onClose }) {
       tabIndex="-1"
       style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
     >
-      <div className="modal-dialog modal-lg">
+      <div className="modal-dialog modal-lg modal-dialog-scrollable">
         <div className="modal-content">
           <div className="modal-header">
             <h5 className="modal-title">New Travel Project</h5>

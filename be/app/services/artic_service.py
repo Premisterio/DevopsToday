@@ -40,25 +40,3 @@ async def get_artwork(external_id: int) -> Optional[dict]:
             return result
         except Exception:
             return None
-
-
-async def search_artworks(query: str, limit: int = 10) -> list[dict]:
-    async with httpx.AsyncClient(timeout=10.0) as client:
-        try:
-            response = await client.get(
-                f"{ARTIC_BASE_URL}/artworks/search",
-                params={"q": query, "limit": limit, "fields": "id,title,image_id"},
-            )
-            response.raise_for_status()
-            results = []
-            for item in response.json().get("data", []):
-                results.append(
-                    {
-                        "id": item["id"],
-                        "title": item["title"],
-                        "image_url": _build_image_url(item.get("image_id")),
-                    }
-                )
-            return results
-        except Exception:
-            return []

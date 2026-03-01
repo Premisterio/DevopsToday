@@ -73,15 +73,14 @@ def update_place(db: Session, project_id: int, place_id: int, data: PlaceUpdate)
     """When all places in the project are visited, auto-completes the project."""
     place = get_place(db, project_id, place_id)
 
-    if data.notes is not None:
-        place.notes = data.notes
-    if data.is_visited is not None:
-        place.is_visited = data.is_visited
+    update_data = data.model_dump(exclude_unset=True)
+    for field, value in update_data.items():
+        setattr(place, field, value)
 
     db.flush()
 
     # Auto-complete project when all places are visited
-    if data.is_visited:
+    if update_data.get("is_visited") is True:
         project = db.query(TravelProject).filter(TravelProject.id == project_id).first()
         if project and project.places and all(p.is_visited for p in project.places):
             project.is_completed = True

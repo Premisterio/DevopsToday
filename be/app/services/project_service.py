@@ -70,12 +70,8 @@ def get_project(db: Session, project_id: int) -> TravelProject:
 
 def update_project(db: Session, project_id: int, data: ProjectUpdate) -> TravelProject:
     project = get_project(db, project_id)
-    if data.name is not None:
-        project.name = data.name
-    if data.description is not None:
-        project.description = data.description
-    if data.start_date is not None:
-        project.start_date = data.start_date
+    for field, value in data.model_dump(exclude_unset=True).items():
+        setattr(project, field, value)
     db.commit()
     db.refresh(project)
     return project

@@ -35,13 +35,20 @@ export const searchArtworks = async (query) => {
   const response = await axios.get(`${ARTIC_URL}/artworks/search`, {
     params: { q: query, limit: 10, fields: 'id,title,image_id' },
   });
-  return response.data.data.map((item) => ({
+  return (response.data.data || []).map((item) => ({
     id: item.id,
     title: item.title,
     image_url: item.image_id
       ? `https://www.artic.edu/iiif/2/${item.image_id}/full/200,/0/default.jpg`
       : null,
   }));
+};
+
+export const getErrorMessage = (err, fallback = 'An error occurred.') => {
+  const detail = err.response?.data?.detail;
+  if (!detail) return fallback;
+  if (Array.isArray(detail)) return detail.map((d) => d.msg).join('; ');
+  return String(detail);
 };
 
 export default api;

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { deleteProject } from '@/lib/api';
+import { deleteProject, getErrorMessage } from '@/lib/api';
 
 export default function ProjectCard({ project, onDeleted }) {
   const [error, setError] = useState(null);
@@ -17,7 +17,7 @@ export default function ProjectCard({ project, onDeleted }) {
       await deleteProject(project.id);
       onDeleted?.();
     } catch (err) {
-      setError(err.response?.data?.detail || 'Failed to delete project.');
+      setError(getErrorMessage(err, 'Failed to delete project.'));
       setDeleting(false);
     }
   };

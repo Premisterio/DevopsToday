@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import ProjectCard from '@/components/ProjectCard';
 import ProjectForm from '@/components/ProjectForm';
-import { getProjects } from '@/lib/api';
+import { getProjects, getErrorMessage } from '@/lib/api';
 
 export default function ProjectsPage() {
   const [projects, setProjects] = useState([]);
@@ -14,7 +14,7 @@ export default function ProjectsPage() {
   const [total, setTotal] = useState(0);
   const limit = 10;
 
-  const fetchProjects = async () => {
+  const fetchProjects = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -22,15 +22,15 @@ export default function ProjectsPage() {
       setProjects(res.data.items || []);
       setTotal(res.data.total || 0);
     } catch (err) {
-      setError(err.response?.data?.detail || 'Failed to load projects.');
+      setError(getErrorMessage(err, 'Failed to load projects.'));
     } finally {
       setLoading(false);
     }
-  };
+  }, [page]);
 
   useEffect(() => {
     fetchProjects();
-  }, [page]);
+  }, [fetchProjects]);
 
   const handleCreated = () => {
     setShowModal(false);

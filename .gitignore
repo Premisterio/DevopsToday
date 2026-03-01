@@ -1,6 +1,7 @@
 # AI files
 CLAUDE.md
 misc.md
+.claude/
 
 # Python
 __pycache__/
