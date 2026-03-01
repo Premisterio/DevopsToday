@@ -33,6 +33,11 @@ app.include_router(projects.router)
 app.include_router(places.router)
 
 
+@app.get("/", tags=["health"])
+def root():
+    return {"message": "Travel Planner API", "docs": "/docs"}
+
+
 @app.get("/health", tags=["health"])
 def health_check():
     return {"status": "ok"}

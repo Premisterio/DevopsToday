@@ -9,8 +9,7 @@ export default function PlaceSearch({ onSelect, onCancel, selectedIds = [] }) {
   const [searching, setSearching] = useState(false);
   const [error, setError] = useState(null);
 
-  const handleSearch = async (e) => {
-    e.preventDefault();
+  const doSearch = async () => {
     if (!query.trim()) return;
     setSearching(true);
     setError(null);
@@ -25,17 +24,26 @@ export default function PlaceSearch({ onSelect, onCancel, selectedIds = [] }) {
     }
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      e.stopPropagation();
+      doSearch();
+    }
+  };
+
   return (
     <div>
-      <form onSubmit={handleSearch} className="d-flex gap-2 mb-3">
+      <div className="d-flex gap-2 mb-3">
         <input
           type="text"
           className="form-control form-control-sm"
           placeholder="Search Art Institute of Chicago…"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={handleKeyDown}
         />
-        <button type="submit" className="btn btn-sm btn-primary" disabled={searching}>
+        <button type="button" className="btn btn-sm btn-primary" onClick={(e) => { e.stopPropagation(); doSearch(); }} disabled={searching}>
           {searching ? 'Searching…' : 'Search'}
         </button>
         {onCancel && (
@@ -43,7 +51,7 @@ export default function PlaceSearch({ onSelect, onCancel, selectedIds = [] }) {
             Cancel
           </button>
         )}
-      </form>
+      </div>
 
       {error && <div className="alert alert-danger py-2 small">{error}</div>}
 
@@ -68,8 +76,9 @@ export default function PlaceSearch({ onSelect, onCancel, selectedIds = [] }) {
                   <span className="small">{artwork.title}</span>
                 </div>
                 <button
+                  type="button"
                   className="btn btn-sm btn-outline-primary ms-2"
-                  onClick={() => onSelect(artwork)}
+                  onClick={(e) => { e.stopPropagation(); onSelect(artwork); }}
                   disabled={alreadyAdded}
                 >
                   {alreadyAdded ? 'Added' : 'Add'}
